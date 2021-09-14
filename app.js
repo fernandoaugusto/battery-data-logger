@@ -9,7 +9,7 @@ require('dotenv').config();
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
-const connectionString = process.env.PG_CONN;
+const connectionString = process.env.DATABASE_URL;
 
 const client = new Client({
   connectionString: connectionString,
