@@ -18,6 +18,8 @@ const client = new Client({
   }
 });
 
+client.connect();
+
 app.get('/', (req, res) => {
   res.send('Welcome to Battery Data Logger.');
 });
@@ -37,7 +39,6 @@ app.post('/voltages', (req, res) => {
 	id, batch_datetime, voltage_array)
 	VALUES ((select nextval('voltage_id_seq'::regclass)), '${batch_datetime}', '${voltage_array}');`;
 
-  client.connect();
   client.query(query_str, (err, result) => {
     if (err) {
       res.status(400).send(err);
@@ -51,7 +52,6 @@ app.get('/voltages', (req, res) => {
 
   var query_str = `SELECT batch_datetime datetime, voltage_array voltage from public.voltages;`;
 
-  client.connect();
   client.query(query_str, (err, result) => {
     if (err) {
       res.status(400).send(err);
@@ -66,7 +66,6 @@ app.delete('/voltages', (req, res) => {
 
   var query_str = `delete from public.voltages;`;
 
-  client.connect();
   client.query(query_str, (err, result) => {
     if (err) {
       res.status(400).send(err);
