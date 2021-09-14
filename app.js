@@ -11,6 +11,14 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 3000;
 const connectionString = process.env.DATABASE_URL;
 
+const client = new Client({
+  connectionString: connectionString,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+client.connect();
+
 app.get('/', (req, res) => {
   res.send('Welcome to Battery Data Logger.');
 });
@@ -70,12 +78,5 @@ app.delete('/voltages', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  const client = new Client({
-    connectionString: connectionString,
-    ssl: {
-      rejectUnauthorized: false
-    }
-  });
-  client.connect();
   console.log(`Battery Data Logger running at http://localhost:${PORT}`);
 });
