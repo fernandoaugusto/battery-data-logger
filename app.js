@@ -49,14 +49,16 @@ app.post('/voltages', (req, res) => {
 
 app.get('/voltages', (req, res) => {
 
-  var query_str = `SELECT * from public.voltages;`;
+  var query_str = `SELECT batch_datetime datetime, voltage_array voltage from public.voltages;`;
 
   client.connect();
   client.query(query_str, (err, result) => {
     if (err) {
       res.status(400).send(err);
     }
-    res.send(result.rows);
+    res.send({
+      dados: result.rows
+    });
   });
 });
 
@@ -70,45 +72,6 @@ app.delete('/voltages', (req, res) => {
       res.status(400).send(err);
     }
     res.send({rows_deleted: result.rowCount});
-  });
-});
-
-
-app.get('/voltages/csv', (req, res) => {
-
-  let workbook = new excel.Workbook();
-  let worksheet = workbook.addWorksheet("Voltages");
-
-  worksheet.columns = [
-    { header: "ID", key: "id", width: 5 },
-    { header: "DateTime", key: "batch_datetime", width: 25 },
-    { header: "VoltagesArray", key: "voltage_array", width: 100 }
-  ];
-
-  res.setHeader(
-    "Content-Type",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  );
-  res.setHeader(
-    "Content-Disposition",
-    "attachment; filename=" + "voltages_report.csv"
-  );
-
-  const options = {
-    dateFormat: 'DD/MM/YYYY HH:mm:ss'
-  };
-
-  var query_str = `SELECT * from public.voltages;`;
-
-  client.connect();
-  client.query(query_str, (err, result) => {
-    if (err) {
-      res.status(400).send(err);
-    }
-    worksheet.addRows(result.rows);
-    workbook.csv.write(res, options).then(function () {
-      res.status(200).end();
-    });
   });
 });
 
